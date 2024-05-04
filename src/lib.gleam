@@ -2,14 +2,6 @@
 import gleam/dict.{type Dict}
 import gleam/dynamic.{type Dynamic}
 
-// type Scalar {
-//   ScalarBoolean
-//   ScalarFloat
-//   ScalarInt
-//   ScalarString
-//   ScalarID
-// }
-
 pub type Object {
   Object(name: String, fields: List(Field))
 }
@@ -38,4 +30,8 @@ pub type ResolveFn =
 
 pub type GraphQL {
   GraphQL(schema: Schema, resolve: ResolveFn)
+}
+
+pub fn execute_request() {
+  todo
 }

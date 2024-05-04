@@ -28,7 +28,7 @@ fn decode_params_query_user(data: Dynamic) -> Result(#(), String) {
   Ok(#())
 }
 
-fn encode_user(user: User) -> Dynamic {
+fn encode_user(user: Option(User)) -> Dynamic {
   dynamic.from(user)
 }
 
@@ -75,9 +75,9 @@ fn resolve(
     "Query.user" -> {
       use owner <- result.try(decode_query(owner))
       use params <- result.try(decode_params_query_user(params_dict))
-      use user <- result.try(app.resolve_query_user(owner, params))
+      let maybe_current_user = app.resolve__query__current_user(owner, params)
 
-      Ok(encode_user(user))
+      Ok(encode_user(maybe_current_user))
     }
     _ -> {
       Error("Couldn't resolve object " <> path)

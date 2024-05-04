@@ -15,7 +15,7 @@ This would also include a way to parse an incoming query / mutation.
 
 ## Application code
 
-This is the supplied by the app, this code defines objects and resolvers using application types.
+This is the application code written by the developers, this code defines objects and resolvers using application types.
 
 ## Generated code
 
