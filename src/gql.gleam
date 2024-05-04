@@ -120,31 +120,49 @@ type Object {
 
 // Output of a field can be an object or a scalar
 type Field {
-  Field(name: String, args: Dict(String, String), output_name: String)
-}
-
-type Query {
-  Query(fields: List(Field))
+  Field(name: String, args: Dict(String, String), output: String)
 }
 
 type Schema {
-  Schema(query: Query)
+  Schema(objects: List(Object), query: Object)
 }
 
 type ResolveFn =
   fn(String, Dynamic, Dynamic) -> Result(Dynamic, String)
 
-type GraphQl {
+type GraphQL {
   GraphQL(schema: Schema, resolve: ResolveFn)
 }
 
+fn build_schema() -> Schema {
+  let objects = [
+    Object(name: "User", fields: [
+      Field("name", args: dict.new(), output: "SCALAR_STRING"),
+      Field("age", args: dict.new(), output: "SCALAR_INT"),
+      Field("friends", args: dict.new(), output: "LIST User"),
+      Field("address", args: dict.new(), output: "Address"),
+    ]),
+    Object(name: "Address", fields: [
+      Field("streetName", args: dict.new(), output: "SCALAR_STRING"),
+      Field("streetNumber", args: dict.new(), output: "SCALAR_STRING"),
+    ]),
+  ]
+
+  let query_obj =
+    Object(name: "Query", fields: [
+      Field(name: "user", args: dict.new(), output: "User"),
+    ])
+
+  Schema(objects: objects, query: query_obj)
+}
+
+fn build_graphql() -> GraphQL {
+  let schema = build_schema()
+  GraphQL(schema: schema, resolve: resolve)
+}
+
 pub fn main() {
-  let schema =
-    Schema(
-      query: Query(fields: [
-        Field(name: "user", args: dict.new(), out: obj_user),
-      ]),
-    )
+  let graphql = build_graphql()
 
   io.println("Hello from gql!")
 }
