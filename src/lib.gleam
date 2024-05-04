@@ -14,9 +14,19 @@ pub type Object {
   Object(name: String, fields: List(Field))
 }
 
+pub type FieldOutput {
+  FieldOutputScalarBoolean
+  FieldOutputScalarFloat
+  FieldOutputScalarInt
+  FieldOutputScalarString
+  FieldOutputObject(String)
+  FieldOutputNullableObject(String)
+  FieldOutputObjectList(String)
+}
+
 // Output of a field can be an object or a scalar
 pub type Field {
-  Field(name: String, args: Dict(String, String), output: String)
+  Field(name: String, args: Dict(String, String), output: FieldOutput)
 }
 
 pub type Schema {

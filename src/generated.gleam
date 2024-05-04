@@ -2,6 +2,7 @@
 import app.{type Address, type User, type UserAddressParams}
 import gleam/dict.{type Dict}
 import gleam/dynamic.{type Dynamic}
+import gleam/option.{type Option, None, Some}
 import gleam/result
 import lib.{type GraphQL, type Schema, Field, GraphQL, Object, Schema}
 
@@ -28,15 +29,23 @@ fn decode_params_query_user(data: Dynamic) -> Result(#(), String) {
 }
 
 fn encode_user(user: User) -> Dynamic {
-  todo
+  dynamic.from(user)
+}
+
+fn encode_user_maybe_address(maybe_address: Option(Address)) -> Dynamic {
+  // case maybe_address {
+  //   Some(address) -> encode_user_address(address)
+  //   None -> dynamic.Null
+  // }
+  dynamic.from(maybe_address)
 }
 
 fn encode_user_address(address: Address) -> Dynamic {
-  todo
+  dynamic.from(address)
 }
 
 fn encode_user_name(name: String) -> Dynamic {
-  todo
+  dynamic.from(name)
 }
 
 // This is generated
@@ -49,14 +58,17 @@ fn resolve(
     "User.address" -> {
       use user <- result.try(decode_user(owner))
       use params <- result.try(decode_params_user_address(params_dict))
-      use address <- result.try(app.resolve_user_address(user, params))
 
-      Ok(encode_user_address(address))
+      let maybe_address = app.resolve_user_address(user, params)
+
+      // A resolver can fail to resolve (which is an error)
+      // or could resolve with Option
+      Ok(encode_user_maybe_address(maybe_address))
     }
     "User.name" -> {
       use user <- result.try(decode_user(owner))
       use params <- result.try(decode_params_user_name(params_dict))
-      use name <- result.try(app.resolve_user_name(user, params))
+      let name = app.resolve_user_name(user, params)
 
       Ok(encode_user_name(name))
     }
@@ -76,20 +88,36 @@ fn resolve(
 fn build_schema() -> Schema {
   let objects = [
     Object(name: "User", fields: [
-      Field("name", args: dict.new(), output: "SCALAR_STRING"),
-      Field("age", args: dict.new(), output: "SCALAR_INT"),
-      Field("friends", args: dict.new(), output: "LIST User"),
-      Field("address", args: dict.new(), output: "Address"),
+      Field("name", args: dict.new(), output: lib.FieldOutputScalarString),
+      Field("age", args: dict.new(), output: lib.FieldOutputScalarInt),
+      Field(
+        "friends",
+        args: dict.new(),
+        output: lib.FieldOutputObjectList("User"),
+      ),
+      Field(
+        "address",
+        args: dict.new(),
+        output: lib.FieldOutputNullableObject("Address"),
+      ),
     ]),
     Object(name: "Address", fields: [
-      Field("streetName", args: dict.new(), output: "SCALAR_STRING"),
-      Field("streetNumber", args: dict.new(), output: "SCALAR_STRING"),
+      Field("streetName", args: dict.new(), output: lib.FieldOutputScalarString),
+      Field(
+        "streetNumber",
+        args: dict.new(),
+        output: lib.FieldOutputScalarString,
+      ),
     ]),
   ]
 
   let query_obj =
     Object(name: "Query", fields: [
-      Field(name: "user", args: dict.new(), output: "User"),
+      Field(
+        name: "user",
+        args: dict.new(),
+        output: lib.FieldOutputObjectList("User"),
+      ),
     ])
 
   Schema(objects: objects, query: query_obj)
