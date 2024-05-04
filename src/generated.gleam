@@ -80,7 +80,7 @@ fn resolve(
       Ok(encode_user(user))
     }
     _ -> {
-      Error("Couldn't resolve object" <> path)
+      Error("Couldn't resolve object " <> path)
     }
   }
 }

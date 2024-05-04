@@ -1,25 +1,30 @@
-# gql
+# Gleam GraphQL server exploration
 
-[![Package Version](https://img.shields.io/hexpm/v/gql)](https://hex.pm/packages/gql)
-[![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/gql/)
+This is some exploration on how a GraphQL server for Gleam could be build.
 
-```sh
-gleam add gql
-```
-```gleam
-import gql
+The aim is to have a fully type safe API. Resolvers should have properly typed inputs and outputs (not Dynamic or Dicts).
 
-pub fn main() {
-  // TODO: An example of the project in use
-}
-```
+This would use code generation to create the server.
 
-Further documentation can be found at <https://hexdocs.pm/gql>.
+## Library code
 
-## Development
+This is the library code, which contains types like `Field` and `Object`. These
+types are used to describe a GraphQL schema.
 
-```sh
-gleam run   # Run the project
-gleam test  # Run the tests
-gleam shell # Run an Erlang shell
-```
+This would also include a way to parse an incoming query / mutation.
+
+## Application code
+
+This is the supplied by the app, this code defines objects and resolvers using application types.
+
+## Generated code
+
+This is generated from the application code. This would generate two outputs:
+
+## Schema
+
+This describe the GraphQL schema. Used for generating an IDL and instrospection.
+
+## Resolver
+
+Used during runtime to resolve the query.
